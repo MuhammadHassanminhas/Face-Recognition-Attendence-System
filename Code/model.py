@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.optim as optim
 import torch.nn.functional as F
 
 class SiameseNetwork(nn.Module):
@@ -50,4 +51,5 @@ class SiameseNetwork(nn.Module):
         output = torch.sigmoid(self.fc2(diff))
         
         return output
+
 

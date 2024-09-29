@@ -8,9 +8,9 @@ class ImagePreprocessor:
         self.positive_folder = positive_folder
         self.negative_folder = negative_folder
         self.device = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.batch_size = batch_size  # New batch size parameter
+        self.batch_size = batch_size
         self.preprocess_transform = transforms.Compose([
-            transforms.Resize((224, 224)),  # Resize to 224x224, adjust as needed
+            transforms.Resize((224, 224)),  # Resize to 224x224
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
@@ -21,7 +21,6 @@ class ImagePreprocessor:
     def preprocess_and_move_to_gpu(self, image_path):
         image = Image.open(image_path)
         tensor_image = self.preprocess_transform(image)
-        tensor_image = tensor_image.unsqueeze(0)
         tensor_image = tensor_image.to(self.device)
         return tensor_image
 
@@ -37,23 +36,19 @@ class ImagePreprocessor:
                     if os.path.isfile(img_path):
                         processed_image = self.preprocess_and_move_to_gpu(img_path)
                         image_tensors.append(processed_image)
-                        print(f"Processed image for {img_name} in {folder_path} is on {self.device}. Shape: {processed_image.shape}")
+                        print(f"Processed image for {img_name} in {folder_path}. Shape: {processed_image.shape}")
 
                         # Clear the cache if the batch size is reached
                         if len(image_tensors) >= self.batch_size:
-                            torch.cuda.empty_cache()  # Clear unused memory
-                            print(f"Cleared CUDA cache after processing {len(image_tensors)} images in {folder_path}.")
-                            # Optionally: Delay or perform additional actions to manage memory
+                            torch.cuda.empty_cache()
                             image_tensors.clear()  # Clear the current batch list
         
         return image_tensors
 
     def process_all_images(self):
-        # Process positive images
         print("Processing Positive images...")
         self.positive_tensors = self.process_images_in_folder(self.positive_folder)
         
-        # Process negative images
         print("Processing Negative images...")
         self.negative_tensors = self.process_images_in_folder(self.negative_folder)
         
@@ -61,6 +56,4 @@ class ImagePreprocessor:
     
     def get_tensors(self):
         return self.positive_tensors, self.negative_tensors
-
-# Usage Example
 
