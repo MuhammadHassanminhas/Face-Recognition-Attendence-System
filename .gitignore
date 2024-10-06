@@ -1,1 +1,9 @@
+# Ignore the Python virtual environment
+myenv/
+
+# Ignore all .pth files
 *.pth
+
+# Add any other files or folders you want to ignore
+
+Data/
