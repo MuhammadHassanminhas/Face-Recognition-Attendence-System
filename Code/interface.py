@@ -21,7 +21,7 @@ class Interface:
         self.transform = transforms.Compose([
             transforms.Resize((128, 128)),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5], std=[0.5])
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])  # Updated for 3 channels
         ])
 
         # Load the student's image from the folder
@@ -37,8 +37,16 @@ class Interface:
     def detect_from_webcam(self):
         cap = cv2.VideoCapture(0)
         
+        if not cap.isOpened():
+            print("Error: Could not open webcam.")
+            return
+        
         while True:
             ret, frame = cap.read()
+            if not ret:
+                print("Error: Could not read frame.")
+                break
+
             faces = self.face_detector.detect_face(frame)
             
             if len(faces) > 0:
