@@ -10,8 +10,8 @@ class SiameseNetwork(nn.Module):
         self.conv3 = nn.Conv2d(128, 256, kernel_size=5)
         self.conv4 = nn.Conv2d(256, 512, kernel_size=3)
         
-        # Calculate the size after convolutions and pooling to set the input size for fc1
-        self.fc1 = nn.Linear(512 * 6 * 6, 4096)  # Adjust based on output size from conv layers
+        # Adjusting the input size for fc1
+        self.fc1 = nn.Linear(512 * 4 * 4, 4096)  # Changed to match output size
 
     def forward_once(self, x):
         x = F.relu(self.conv1(x))

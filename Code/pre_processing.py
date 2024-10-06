@@ -48,4 +48,4 @@ def create_dataloaders(positive_path, negative_path, batch_size=32):
     dataset = ImageDataset(positive_path, negative_path, transform=transform)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    return dataloader, dataloader
+    return dataloader

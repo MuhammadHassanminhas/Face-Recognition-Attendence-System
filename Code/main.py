@@ -13,6 +13,11 @@ def main():
     # Preprocessing
     dataloader = create_dataloaders(positive_path, negative_path, batch_size=32)  # Changed to a single dataloader
 
+    # Check the first batch shape
+    for pos_images, neg_images in dataloader:
+        print(f"Positive batch shape: {pos_images.shape}, Negative batch shape: {neg_images.shape}")
+        break  # Remove this break to see all batches
+
     # Training the Siamese Network
     model = SiameseNetwork()
     criterion = nn.BCEWithLogitsLoss()
@@ -22,11 +27,10 @@ def main():
                       device='cuda' if torch.cuda.is_available() else 'cpu')
 
     # Train with combined loader
-    trainer.train(dataloader, num_epochs=10)  # Use a single dataloader
+    trainer.train(dataloader, num_epochs=100)  # Use a single dataloader
+    torch.save(model.state_dict(), 'siamese_model.pth')
 
     # Face Detection
-    face_detection = FaceDetection(cascade_path='haarcascade_frontalface_default.xml')
-    face_detection.detect_from_webcam()
 
 if __name__ == "__main__":
     main()

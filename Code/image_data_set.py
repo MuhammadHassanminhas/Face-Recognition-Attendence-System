@@ -15,13 +15,6 @@ class ImageDataset(Dataset):
         self.positive_images = self.load_images(positive_path)
         self.negative_images = self.load_images(negative_path)
 
-        # Lists to store tensors for positive and negative images
-        self.positive_tensors = []
-        self.negative_tensors = []
-
-        # Preprocess and convert images to tensors
-        self.preprocess_images()
-
     def load_images(self, path):
         images = []
         for folder in os.listdir(path):
@@ -33,27 +26,25 @@ class ImageDataset(Dataset):
                     images.append((img, img_file))  # Store both the image and its filename
         return images
 
-    def preprocess_images(self):
-        for img, filename in self.positive_images:
-            img_tensor = self.transform(img) if self.transform else img
-            self.check_image_size(img_tensor, filename)
-            self.positive_tensors.append(img_tensor)
-
-        for img, filename in self.negative_images:
-            img_tensor = self.transform(img) if self.transform else img
-            self.check_image_size(img_tensor, filename)
-            self.negative_tensors.append(img_tensor)
-
     def __len__(self):
-        return max(len(self.positive_tensors), len(self.negative_tensors))
+      return len(self.positive_images)
 
     def __getitem__(self, idx):
-        # Get a positive image tensor
-        pos_image = self.positive_tensors[idx % len(self.positive_tensors)]
-        # Get a negative image tensor, loop through negatives
-        neg_image = self.negative_tensors[idx % len(self.negative_tensors)]
+        # Get a positive image
+        pos_image, pos_filename = self.positive_images[idx % len(self.positive_images)]
+        # Get a negative image, loop through negatives
+        neg_image, neg_filename = self.negative_images[idx % len(self.negative_images)]
 
-        return pos_image, neg_image
+        # Resize and transform both images
+        if self.transform:
+            pos_image = self.transform(pos_image)
+            neg_image = self.transform(neg_image)
+
+        # Check if the transformed images match the target size
+        self.check_image_size(pos_image, pos_filename)
+        self.check_image_size(neg_image, neg_filename)
+
+        return pos_image, neg_image  # Return both images as a tuple
 
     def check_image_size(self, image, filename):
         # Get the size of the transformed image
