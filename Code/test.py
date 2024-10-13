@@ -77,6 +77,9 @@ while True:
         # Compare the detected face with reference images
         label = compare_faces(input_tensor)  # Get the label from comparison
 
+        # Print the detected student's name in the terminal
+        print(f"Detected: {label}")
+
         # Draw a rectangle around the face
         cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
@@ -92,3 +95,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
+
